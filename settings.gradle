@@ -1,10 +1,5 @@
-rootProject.name = "Rqueue"
-include "rqueue-test-util"
+rootProject.name = "RqueueRabbitMQ"
 include "rqueue-core"
-include "rqueue-spring-common-test"
-include "rqueue-spring"
 include "rqueue-spring-boot-starter"
-include "rqueue-spring-example"
-include "rqueue-spring-boot-example"
-include "rqueue-spring-boot-reactive-example"
-
+include "rqueue-rabbitmq-example"
+include "rqueue-test"

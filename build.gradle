@@ -24,7 +24,7 @@ allprojects {
 ext {
     springBootVersion = "3.0.1"
     springVersion = "6.0.3"
-    springDataVersion = "3.0.0"
+    springAmqpVersion = "3.0.1"
     microMeterVersion = "1.10.2"
 
     // logging dependencies
@@ -37,9 +37,10 @@ ext {
     mockitoVersion = "3.5.0"
     hamcrestVersion = "2.2"
     jacocoVersion = "0.8.8"
-    embeddedRedisVersion = "0.7.2"
     h2Version = "2.1.214"
     tomcatVersion = "10.1.4"
+    testcontainersVersion = "1.19.3"
+    awaitilityVersion = "4.2.0"
 
     // utility
     lang3Version = "3.9"
@@ -50,7 +51,6 @@ ext {
     pebbleVersion = "3.2.2"
 
     // database
-    lettuceVersion = "6.2.2.RELEASE"
     jakartaAnnotationVersion = "2.1.0"
     jakartaPersistenceVersion = "3.1.0"
     hibernateCoreVersion = "5.6.14.Final"
@@ -66,7 +66,6 @@ ext {
     guavaVersion = "32.1.1-jre"
 }
 
-
 subprojects {
     group = "com.github.sonus21"
     version = "3.4.0-RELEASE"
@@ -74,8 +73,8 @@ subprojects {
     dependencies {
         // https://mvnrepository.com/artifact/org.springframework/spring-messaging
         api "org.springframework:spring-messaging:${springVersion}"
-        // https://mvnrepository.com/artifact/org.springframework.data/spring-data-redis
-        api "org.springframework.data:spring-data-redis:${springDataVersion}"
+        // https://mvnrepository.com/artifact/org.springframework.amqp/spring-rabbit
+        api "org.springframework.amqp:spring-rabbit:${springAmqpVersion}"
 
         // https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
         implementation "org.apache.commons:commons-lang3:${lang3Version}"
@@ -111,44 +110,6 @@ subprojects {
     }
 }
 
-def publishedProjects = subprojects.findAll({ subproject ->
-    subproject.pluginManager.hasPlugin("java") && !subproject.name.endsWith("example") && !subproject.name.contains("test")
-})
-
-task codeCoverageReport(type: JacocoReport, group: "verification", description: "Generate code coverage report") {
-    executionData fileTree(project.rootDir.absolutePath).include("**/build/reports/jacoco/*.exec")
-
-    publishedProjects.each {
-        sourceSets it.sourceSets.main
-    }
-
-    reports {
-        xml.required = System.getenv("CIRCLECI") == "true"
-        csv.required = false
-        html.required = System.getenv("CIRCLECI") != "true"
-        xml.outputLocation = file("${buildDir}/reports/jacoco/test/jacocoTestReport.xml")
-    }
-
-    afterEvaluate {
-        classDirectories.setFrom(files(classDirectories.files.collect {
-            fileTree(dir: it,
-                    exclude: [
-                            "com/github/sonus21/rqueue/exception",
-                            "com/github/sonus21/rqueue/models/response",
-                            "com/github/sonus21/rqueue/core/RqueueMessageSender*",
-                            "com/github/sonus21/rqueue/utils/PrefixLogger*",
-                            "com/github/sonus21/rqueue/utils/StackTraceUtil*",
-                            "com/github/sonus21/rqueue/core/ScheduledTaskDetail*",
-                    ]
-            )
-        }))
-    }
-    dependsOn(subprojects*.test)
-    doLast {}
-    test.useTestNG()
-}
-
-
 jacoco {
     toolVersion = "${jacocoVersion}"
 }
@@ -160,10 +121,4 @@ clean.doLast {
             delete _files
         }
     })
-}
-
-coveralls {
-    description = "Uploads the aggregated coverage report to Coveralls"
-    sourceDirs = publishedProjects.sourceSets.main.allSource.srcDirs.flatten()
-    jacocoReportPath "${buildDir}/reports/jacoco/test/jacocoTestReport.xml"
 }

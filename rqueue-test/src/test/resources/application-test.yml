@@ -1,0 +1,44 @@
+spring:
+  application:
+    name: rqueue-rabbitmq-test
+  
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
+    virtual-host: /
+    connection-timeout: 15000
+    listener:
+      simple:
+        acknowledge-mode: auto
+        concurrency: 1
+        max-concurrency: 10
+        prefetch: 1
+        retry:
+          enabled: true
+          max-attempts: 3
+          initial-interval: 1000
+          max-interval: 10000
+          multiplier: 2
+
+rqueue:
+  enabled: true
+  key-prefix: "__rq::"
+  job-enabled: true
+  cluster-mode: false
+  message-durability: 10080
+  message-durability-in-terminal-state: 1800
+  retry-per-poll: 1
+  system-mode: BOTH
+  reactive-enabled: false
+  latest-version-check-enabled: false
+
+logging:
+  level:
+    com.github.sonus21.rqueue: INFO
+    org.springframework.amqp: WARN
+    org.springframework.rabbit: WARN
+    org.testcontainers: WARN
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"

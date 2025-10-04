@@ -1,90 +1,67 @@
+# Rqueue RabbitMQ: RabbitMQ-based Task Queue for Spring and Spring Boot
+
 <div>
    <img  align="left" src="https://raw.githubusercontent.com/sonus21/rqueue/master/rqueue-core/src/main/resources/public/rqueue/img/android-chrome-192x192.png" alt="Rqueue Logo" width="90">
-   <h1 style="float:left">Rqueue: Redis Queue, Task Queue, Scheduled Queue for Spring and Spring Boot</h1>
+   <h1 style="float:left">Rqueue RabbitMQ: RabbitMQ-based Task Queue, Scheduled Queue for Spring and Spring Boot</h1>
 </div>
 
-[![Build Status](https://circleci.com/gh/sonus21/rqueue/tree/master.svg?style=shield)](https://circleci.com/gh/sonus21/rqueue/tree/master)
-[![Coverage Status](https://coveralls.io/repos/github/sonus21/rqueue/badge.svg?branch=master)](https://coveralls.io/github/sonus21/rqueue?branch=master)
-[![Maven Central](https://img.shields.io/maven-central/v/com.github.sonus21/rqueue-core)](https://repo1.maven.org/maven2/com/github/sonus21/rqueue-core)
-[![Javadoc](https://javadoc.io/badge2/com.github.sonus21/rqueue-core/javadoc.svg)](https://javadoc.io/doc/com.github.sonus21/rqueue-core)
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
-
-**Rqueue** is an asynchronous task executor(worker) built for spring and spring-boot framework based
-on the spring framework's messaging library backed by Redis. It can be used as message broker as
-well, where all services code is in Spring.
-
-<br/>
-
-![Message Flow](https://raw.githubusercontent.com/sonus21/rqueue/master/docs/static/rqueue-message-flow.svg?sanitize=true)
+**Rqueue RabbitMQ** is an asynchronous task executor(worker) built for Spring and Spring Boot framework based on RabbitMQ message broker. It provides the same API as the original Rqueue but uses RabbitMQ instead of Redis as the underlying message broker.
 
 ## Features
 
 * **Instant delivery** : Instant execute this message in the background
-* **Message scheduling** : A message can be scheduled for any arbitrary period
+* **Message scheduling** : A message can be scheduled for any arbitrary period using RabbitMQ's delayed message plugin
 * **Unique message** : Unique message processing for a queue based on the message id
 * **Periodic message** : Process same message at certain interval
 * **Priority tasks** : task having some special priority like high, low, medium
-* **Message delivery** : It's guaranteed that a message is consumed **at least once**.  (Message
-  would be consumed by a worker more than once due to the failure in the underlying
-  worker/restart-process etc, otherwise exactly one delivery)
+* **Message delivery** : It's guaranteed that a message is consumed **at least once**
 * **Message retry** : Message would be retried automatically on application crash/failure/restart
-  etc.
 * **Automatic message serialization and deserialization**
 * **Message Multicasting** : Call multiple message listeners on every message
-* **Batch Message Polling** : Fetch multiple messages from Redis at once
+* **Batch Message Polling** : Fetch multiple messages from RabbitMQ at once
 * **Metrics** : In flight messages, waiting for consumption and scheduled messages
-* **Competing Consumers** : multiple messages can be consumed in parallel by different
-  workers/listeners.
+* **Competing Consumers** : multiple messages can be consumed in parallel by different workers/listeners
 * **Concurrency** : Concurrency of any listener can be configured
-* **Queue Priority** :
-  * Group level queue priority(weighted and strict)
-  * Sub queue priority(weighted and strict)
-* **Long execution job** : Long running jobs can check in periodically.
+* **Queue Priority** : Group level queue priority(weighted and strict)
+* **Long execution job** : Long running jobs can check in periodically
 * **Execution Backoff** : Exponential and fixed back off (default fixed back off)
-* **Middleware** :  Add one or more middleware, middlewares are called before listener method.
+* **Middleware** : Add one or more middleware, middlewares are called before listener method
 * **Callbacks** : Callbacks for dead letter queue, discard etc
-* **Events** : 1. Bootstrap event 2. Task execution event.
-* **Redis connection** : A different redis setup can be used for Rqueue
-* **Redis cluster** : Redis cluster can be used with Lettuce client.
-* **Redis Sentinel** : Redis sentinel can be used with Rqueue.
-* **Reactive Programming** : Supports reactive Redis and spring webflux
-* **Web Dashboard** :  Web dashboard to manage a queue and queue insights including latency
+* **Events** : Bootstrap event and Task execution event
+* **RabbitMQ connection** : A different RabbitMQ setup can be used for Rqueue
+* **RabbitMQ cluster** : RabbitMQ cluster can be used with Rqueue
+* **Web Dashboard** : Web dashboard to manage a queue and queue insights including latency
 
 ### Requirements
 
 * Spring 5+, 6+
-* Java 1.8+,17
-* Spring boot 2+,3+
-* Lettuce client for Redis cluster
-* Read master preference for Redis cluster
+* Java 1.8+, 17
+* Spring Boot 2+, 3+
+* RabbitMQ 3.8+
+* RabbitMQ Delayed Message Plugin (for delayed messages)
 
 ## Getting Started
 
 ### Dependency
 
-Release Version: [Maven central](https://search.maven.org/search?q=g:com.github.sonus21)
-
 #### Spring Boot
 
 **NOTE:**
 
-* For spring boot 2.x use Rqueue 2.x
-* For spring boot 3.x use Rqueue 3.x
-
-Get the latest one
-from [Maven central](https://search.maven.org/search?q=g:com.github.sonus21%20AND%20a:rqueue-spring-boot-starter)
+* For spring boot 2.x use Rqueue RabbitMQ 2.x
+* For spring boot 3.x use Rqueue RabbitMQ 3.x
 
 * Add dependency
   * Gradle
     ```groovy
-        implementation 'com.github.sonus21:rqueue-spring-boot-starter:2.13.1-RELEASE'
+        implementation 'com.github.sonus21:rqueue-rabbitmq-spring-boot-starter:3.4.0-RELEASE'
     ```
   * Maven
     ```xml
      <dependency>
         <groupId>com.github.sonus21</groupId>
-        <artifactId>rqueue-spring-boot-starter</artifactId>
-        <version>2.13.1-RELEASE</version>
+        <artifactId>rqueue-rabbitmq-spring-boot-starter</artifactId>
+        <version>3.4.0-RELEASE</version>
     </dependency>
     ```
 
@@ -92,52 +69,9 @@ from [Maven central](https://search.maven.org/search?q=g:com.github.sonus21%20AN
 
 ---
 
-#### Spring Framework
-
-**NOTE**
-
-* For spring framework 5.x use rqueue-spring 2.x
-* For spring framework 6.x use rqueue-spring 3.x
-
-Get the latest one
-from [Maven central](https://search.maven.org/search?q=g:com.github.sonus21%20AND%20a:rqueue-spring)
-
-* Add Dependency
-  * Gradle
-    ```groovy
-        implementation 'com.github.sonus21:rqueue-spring:2.13.1-RELEASE'
-    ```
-  * Maven
-    ```xml
-     <dependency>
-       <groupId>com.github.sonus21</groupId>
-       <artifactId>rqueue-spring</artifactId>
-       <version>2.13.1-RELEASE</version>
-     </dependency>
-    ```
-* Add annotation `EnableRqueue` on application config class
-* Provide a RedisConnectionFactory bean
-
-###### Configuration
-
-```java
-
-@EnableRqueue
-public class Application {
-  @Bean
-  public RedisConnectionFactory redisConnectionFactory() {
-    // return a redis connection factory
-  }
-}
-```
-
----
-
 ### Message publishing/Task submission
 
-All messages need to be sent using `RqueueMessageEnqueuer` bean's `enqueueXXX`, `enqueueInXXX`
-and `enqueueAtXXX` methods. It has handful number of `enqueue`, `enqueueIn`, `enqueueAt` methods, we
-can use any one of them based on the use case.
+All messages need to be sent using `RqueueMessageEnqueuer` bean's `enqueueXXX`, `enqueueInXXX` and `enqueueAtXXX` methods. It has handful number of `enqueue`, `enqueueIn`, `enqueueAt` methods, we can use any one of them based on the use case.
 
 ```java
 public class MessageService {
@@ -146,7 +80,7 @@ public class MessageService {
   private RqueueMessageEnqueuer rqueueMessageEnqueuer;
 
   public void doSomething() {
-    rqueueMessageEnqueuer.enqueue("simple-queue", "Rqueue is configured");
+    rqueueMessageEnqueuer.enqueue("simple-queue", "Rqueue RabbitMQ is configured");
   }
 
   public void createJOB(Job job) {
@@ -188,8 +122,7 @@ public class MessageService {
 
 ### Worker/Consumer/Task Executor/Listener
 
-Any method that's part of spring bean, can be marked as worker/message listener
-using `RqueueListener` annotation
+Any method that's part of spring bean, can be marked as worker/message listener using `RqueueRabbitListener` annotation
 
 ```java
 
@@ -197,40 +130,40 @@ using `RqueueListener` annotation
 @Slf4j
 public class MessageListener {
 
-  @RqueueListener(value = "simple-queue")
+  @RqueueRabbitListener(value = "simple-queue")
   public void simpleMessage(String message) {
     log.info("simple-queue: {}", message);
   }
 
-  @RqueueListener(value = "job-queue", numRetries = "3",
+  @RqueueRabbitListener(value = "job-queue", numRetries = "3",
       deadLetterQueue = "failed-job-queue", concurrency = "5-10")
   public void onMessage(Job job) {
     log.info("Job alert: {}", job);
   }
 
-  @RqueueListener(value = "push-notification-queue", numRetries = "3",
+  @RqueueRabbitListener(value = "push-notification-queue", numRetries = "3",
       deadLetterQueue = "failed-notification-queue")
   public void onMessage(Notification notification) {
     log.info("Push notification: {}", notification);
   }
 
-  @RqueueListener(value = "sms", priority = "critical=10,high=8,medium=4,low=1")
+  @RqueueRabbitListener(value = "sms", priority = "critical=10,high=8,medium=4,low=1")
   public void onMessage(Sms sms) {
     log.info("Sms : {}", sms);
   }
 
-  @RqueueListener(value = "chat-indexing", priority = "20", priorityGroup = "chat")
+  @RqueueRabbitListener(value = "chat-indexing", priority = "20", priorityGroup = "chat")
   public void onMessage(ChatIndexing chatIndexing) {
     log.info("ChatIndexing message: {}", chatIndexing);
   }
 
-  @RqueueListener(value = "chat-indexing-daily", priority = "10", priorityGroup = "chat")
+  @RqueueRabbitListener(value = "chat-indexing-daily", priority = "10", priorityGroup = "chat")
   public void onMessage(ChatIndexing chatIndexing) {
     log.info("ChatIndexing message: {}", chatIndexing);
   }
 
   // checkin job example
-  @RqueueListener(value = "chat-indexing-weekly", priority = "5", priorityGroup = "chat")
+  @RqueueRabbitListener(value = "chat-indexing-weekly", priority = "5", priorityGroup = "chat")
   public void onMessage(ChatIndexing chatIndexing,
       @Header(RqueueMessageHeaders.JOB) com.github.sonus21.rqueue.core.Job job) {
     log.info("ChatIndexing message: {}", chatIndexing);
@@ -241,110 +174,103 @@ public class MessageListener {
 
 ---
 
-## Dashboard
+## Configuration
 
-Link: [http://localhost:8080/rqueue](http://localhost:8080/rqueue)
+### RabbitMQ Configuration
 
-[![Dashboard](https://raw.githubusercontent.com/sonus21/rqueue/master/docs/static/stats-graph.png)](https://raw.githubusercontent.com/sonus21/rqueue/master/docs/static/stats-graph.png)
+```yaml
+spring:
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+    virtual-host: /
+    connection-timeout: 15000
+    listener:
+      simple:
+        acknowledge-mode: auto
+        concurrency: 1
+        max-concurrency: 10
+        prefetch: 1
+        retry:
+          enabled: true
+          max-attempts: 3
+          initial-interval: 1000
+          max-interval: 10000
+          multiplier: 2
 
-#### Queue Statistics
+rqueue:
+  enabled: true
+  key-prefix: "__rq::"
+  job-enabled: true
+  cluster-mode: false
+  message-durability: 10080
+  message-durability-in-terminal-state: 1800
+  retry-per-poll: 1
+  system-mode: BOTH
+  reactive-enabled: false
+  latest-version-check-enabled: true
+```
 
-Micrometer based dashboard for queue
+### RabbitMQ Delayed Message Plugin
 
-[![Grafana Dashboard](https://raw.githubusercontent.com/sonus21/rqueue/master/docs/static/grafana-dashboard.png)](https://raw.githubusercontent.com/sonus21/rqueue/master/docs/static/grafana-dashboard.png)
+For delayed message functionality, you need to install the RabbitMQ Delayed Message Plugin:
 
-#### Message Waiting For Execution
+```bash
+# Download the plugin
+wget https://github.com/rabbitmq/rabbitmq-delayed-message-exchange/releases/download/v3.12.0/rabbitmq_delayed_message_exchange-3.12.0.ez
 
-[![Explore Queue](https://raw.githubusercontent.com/sonus21/rqueue/master/docs/static/queue-explore.png)](https://raw.githubusercontent.com/sonus21/rqueue/master/docs/static/queue-explore.png)
+# Copy to RabbitMQ plugins directory
+sudo cp rabbitmq_delayed_message_exchange-3.12.0.ez /usr/lib/rabbitmq/lib/rabbitmq_server-3.12.0/plugins/
 
-#### Recent jobs details
+# Enable the plugin
+sudo rabbitmq-plugins enable rabbitmq_delayed_message_exchange
+```
 
-[![Jobs](https://raw.githubusercontent.com/sonus21/rqueue/master/docs/static/jobs.png)](https://raw.githubusercontent.com/sonus21/rqueue/master/docs/static/jobs.png)
+## Quick Start with Docker
 
----
+1. **Start RabbitMQ with Docker Compose:**
+   ```bash
+   docker-compose up -d
+   ```
+
+2. **Run the example application:**
+   ```bash
+   ./gradlew :rqueue-rabbitmq-example:bootRun
+   ```
+
+3. **Access RabbitMQ Management UI:**
+   - URL: http://localhost:15672
+   - Username: guest
+   - Password: guest
+
+## Differences from Redis-based Rqueue
+
+1. **Message Broker**: Uses RabbitMQ instead of Redis
+2. **Delayed Messages**: Uses RabbitMQ Delayed Message Plugin instead of Redis sorted sets
+3. **Priority Queues**: Uses RabbitMQ priority queues instead of Redis priority queues
+4. **Message Persistence**: Uses RabbitMQ's built-in persistence instead of Redis persistence
+5. **Clustering**: Uses RabbitMQ clustering instead of Redis clustering
+6. **Monitoring**: Uses RabbitMQ Management UI instead of Redis monitoring
 
 ## Status
 
-Rqueue is stable and production ready, it's processing 100K+ messages daily in production
-environment.
-**Some of the Rqueue Users**
-
-<a href="https://airtel.africa" target="_blank">
-<img alt="Airtel" src="https://raw.githubusercontent.com/sonus21/rqueue/master/docs/static/users/airtel-africa.png" width="160" align="middle"/>
-</a>
-&nbsp;&nbsp;
-<a href="https://vonage.com" target="_blank">
-  <img alt="Vonage" src="https://raw.githubusercontent.com/sonus21/rqueue/master/docs/static/users/vonage.png" width="160" align="middle"/>
-</a>
-&nbsp;&nbsp;
-<a href="https://www.t-mobile.com" target="_blank">
-  <img alt="Vonage" src="https://raw.githubusercontent.com/sonus21/rqueue/master/docs/static/users/t-mobile.svg" align="middle"/>
-</a>
-&nbsp;&nbsp;
-<a href="https://line.me" target="_blank">
-  <img alt="Line Chat" src="https://raw.githubusercontent.com/sonus21/rqueue/master/docs/static/users/line.png" width="60" height="60" align="middle"/>
-</a>
-
-<a href="https://opentext.com/" target="_blank">
-  <img alt="Opentext" src="https://raw.githubusercontent.com/sonus21/rqueue/master/docs/static/users/opentext.png" width="200" height="100" align="middle"/>
-</a>
-
-**We would love to add your organization name here, if you're one of the Rqueue users, please raise
-a
-PR/[issue](https://github.com/sonus21/rqueue/issues/new?template=i-m-using-rqueue.md&title=Add+my+organisation+in+Rqueue+Users)
-.**
-
-
----
-
-<!---- Signing Key
-~/.gradle/gradle.properties file
-
-sonatypeUsername=xyz
-sonatypePassword=xyz
-signing.keyId=371EDCC6
-signing.password=xyz
-signing.secretKeyRingFile=/Users/sonu/.gnupg/secring.gpg
-
-
-For signing generate gpg key using gpg tool using `gpg --gen-key`
-
-signing.password is gpg key password
-signing.keyId is last 8 character of gpg key, find using `gpg -K`
-signing.secretKeyRingFile=/Users/sonu/.gnupg/secring.gpg generate this as `gpg --keyring secring.gpg --export-secret-keys > ~/.gnupg/secring.gpg`
-
---->
+Rqueue RabbitMQ is a new implementation based on the original Rqueue but using RabbitMQ as the message broker. It provides the same API and functionality as the original Rqueue but with RabbitMQ's reliability and features.
 
 ## Support
 
-* Please report bug,question,feature(s)
-  to [issue](https://github.com/sonus21/rqueue/issues/new/choose) tracker.
+* Please report bug, question, feature(s) to [issue](https://github.com/sonus21/rqueue/issues/new/choose) tracker.
 * Ask question on StackOverflow using [#rqueue](https://stackoverflow.com/tags/rqueue) tag
 
 ## Contribution
 
-You are most welcome for any pull requests for any feature/bug/enhancement. You would need Java8 and
-gradle to start with. In root `build.gradle` file comment out spring related versions, or set
-environment variables for Spring versions. You can use [module, class and other diagrams](https://sourcespy.com/github/sonus21rqueue/) 
-to familiarise yourself with the project.
+You are most welcome for any pull requests for any feature/bug/enhancement. You would need Java8 and gradle to start with.
 
 **Please format your code with Google Java formatter.**
-
-## Links
-
-* Documentation: [https://sonus21.github.io/rqueue](https://sonus21.github.io/rqueue)
-* Releases: [https://github.com/sonus21/rqueue/releases](https://github.com/sonus21/rqueue/releases)
-* Issue tracker: [https://github.com/sonus21/rqueue/issues](https://github.com/sonus21/rqueue/issues)
-* Maven Central:
-  * [https://repo1.maven.org/maven2/com/github/sonus21/rqueue-spring](https://repo1.maven.org/maven2/com/github/sonus21/rqueue-spring)
-  * [https://repo1.maven.org/maven2/com/github/sonus21/rqueue-spring-boot-starter](https://repo1.maven.org/maven2/com/github/sonus21/rqueue-spring-boot-starter)
-  
-* StackOverflow: [https://stackoverflow.com/tags/rqueue](https://stackoverflow.com/tags/rqueue)
-* Discord: https://discord.gg/2hgQZXS2
-* Project Progress: [https://github.com/sonus21/rqueue/projects/3](https://github.com/sonus21/rqueue/projects/3)
 
 ## License
 
 © [Sonu Kumar](mailto:sonunitw12@gmail.com) 2019-Instant.now
 
-The Rqueue is released under version 2.0 of the Apache License.
+The Rqueue RabbitMQ is released under version 2.0 of the Apache License.
