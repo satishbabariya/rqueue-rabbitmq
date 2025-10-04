@@ -1,5 +1,3 @@
-# Rqueue RabbitMQ: RabbitMQ-based Task Queue for Spring and Spring Boot
-
 <div>
    <img  align="left" src="https://raw.githubusercontent.com/sonus21/rqueue/master/rqueue-core/src/main/resources/public/rqueue/img/android-chrome-192x192.png" alt="Rqueue Logo" width="90">
    <h1 style="float:left">Rqueue RabbitMQ: RabbitMQ-based Task Queue, Scheduled Queue for Spring and Spring Boot</h1>
